@@ -1,0 +1,104 @@
+services:
+  user_db:
+    image: postgres:14.13-alpine3.20
+    environment:
+      POSTGRES_DB: to_do_list_user
+      POSTGRES_USER: mirodil
+      POSTGRES_PASSWORD: 1212
+    volumes:
+      - postgres_data_user:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mirodil -d to_do_list_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  task_db:
+    image: postgres:14.13-alpine3.20   
+    environment:
+      POSTGRES_DB: to_do_list_task
+      POSTGRES_USER: mirodil
+      POSTGRES_PASSWORD: 1212
+    volumes:
+      - postgres_data_task:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mirodil -d to_do_list_task"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine3.20
+    ports:
+      - "6380:6379"
+
+
+  go_user_service:
+    build:
+      context: ./go_user_service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - user_db
+      - redis
+    environment:
+      DATABASE_URL: postgres://mirodil:1212@user_db:5432/to_do_list_user?sslmode=disable
+      REDIS_URL: redis://redis:6379
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - default
+
+
+  go_task_service:
+    build:
+      context: ./go_task_service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - task_db
+      - redis
+    environment:
+      DATABASE_URL: postgres://mirodil:1212@task_db:5432/to_do_list_task?sslmode=disable
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - default
+
+  api_gateway:
+    build:
+      context: ./api_gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - go_user_service
+      - go_task_service
+    environment:
+      USER_SERVICE_URL: http://go_user_service:8081
+      TASK_SERVICE_URL: http://go_task_service:8082
+    networks:
+      - default
+
+volumes:
+  postgres_data_user:
+  postgres_data_task:
+
+
+
+networks:
+  default:
+    name: to_do_list_default

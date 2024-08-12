@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+option go_package = "genproto/admin_service";
+
+package admin_service_go;
+import "google/protobuf/empty.proto";
+
+service AdminService {
+    rpc Create(CreateAdmin) returns (GetAdmin){}
+    rpc GetByID(AdminPrimaryKey) returns (GetAdmin){}
+    rpc GetList(GetListAdminRequest) returns (GetListAdminResponse){}
+    rpc Update(UpdateAdmin) returns (GetAdmin){}
+    rpc Delete(AdminPrimaryKey) returns (google.protobuf.Empty){}
+    rpc Login(AdminLoginRequest) returns (AdminLoginResponse){}
+    rpc Register(AdminRegisterRequest) returns (google.protobuf.Empty){}
+    rpc RegisterConfirm(AdminRegisterConfRequest) returns (AdminLoginResponse){}
+    rpc ChangePassword(AdminChangePassword) returns (AdminChangePasswordResp){}
+}
+
+message AdminPrimaryKey {
+    string id = 1;
+}
+
+message CreateAdmin {
+    string birthday = 1;
+    string gender = 2;
+    string fullname =3;
+    string email = 4;
+    string phone = 5;
+    string user_password = 6;
+}
+
+message GetAdmin {
+    string user_login = 1;
+    string birthday = 2;
+    string gender = 3;
+    string fullname = 4;
+    string email = 5;
+    string phone = 6;
+    string created_at = 7;
+    string updated_at = 8;
+    string id = 9;
+}
+
+message UpdateAdmin {
+    string id = 1;
+    string birthday = 2;
+    string gender = 3;
+    string fullname = 4;
+    string email = 5;
+    string phone = 6;
+}
+
+message GetListAdminRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    string search = 3;
+}
+
+message GetListAdminResponse {
+    int64 Count = 1;
+    repeated GetAdmin Admins = 2;
+}
+
+
+message AdminLoginRequest {
+    string user_login = 1;
+    string user_password = 2;
+}
+
+
+message AdminLoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+
+message AdminRegisterRequest {
+    string mail = 1;
+}
+
+message AdminRegisterConfRequest {
+    string mail = 1;
+    string otp = 2;
+    repeated CreateAdmin Admin = 3;
+}
+
+
+message AdminChangePassword {
+    string UserLogin = 1;
+    string OldPassword = 2;
+    string NewPassword  = 3;
+}
+
+message AdminChangePasswordResp {
+    string comment = 1;
+}
+
+message GetAdminByLogin {
+    string user_login = 1;
+    string user_password = 2;
+    string birthday = 3;
+    string gender = 4;
+    string fullname = 5;
+    string email = 6;
+    string phone = 7;
+    string created_at = 8;
+    string updated_at = 9;
+    string id = 10;
+}

@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+option go_package = "genproto/user_service";
+
+package user_service_go;
+import "google/protobuf/empty.proto";
+
+
+service UserService {
+    rpc Create(CreateUser) returns (GetUser) {}
+    rpc GetByID(UserPrimaryKey) returns (GetUser) {}
+    rpc GetList(GetListUserRequest) returns (GetListUserResponse) {}
+    rpc Update(UpdateUser) returns (GetUser) {}
+    rpc Delete(UserPrimaryKey) returns (google.protobuf.Empty) {}
+    rpc Check(UserPrimaryKey) returns (CheckUserResp){}
+    rpc Login(UserLoginRequest) returns (UserLoginResponse){}
+    rpc Register(UserRegisterRequest) returns (google.protobuf.Empty){}
+    rpc RegisterConfirm(UserRegisterConfRequest) returns (UserLoginResponse){}
+    rpc ChangePassword(UserChangePassword) returns (UserChangePasswordResp){}
+
+}
+
+
+message UserPrimaryKey {
+    string id = 1;
+}
+
+message CreateUser {
+    string birthday = 1;
+    string gender = 2;
+    string fullname =3;
+    string email = 4;
+    string phone = 5;
+    string user_password = 6;
+}
+
+message GetUser {
+    string user_login = 1;
+    string birthday = 2;
+    string gender = 3;
+    string fullname = 4;
+    string email = 5;
+    string phone = 6;
+    string created_at = 7;
+    string updated_at = 8;
+    string id = 9;
+}
+
+message UpdateUser {
+    string id = 1;
+    string birthday = 2;
+    string gender = 3;
+    string fullname = 4;
+    string email = 5;
+    string phone = 6;
+}
+
+message GetListUserRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    string search = 3;
+}
+
+message GetListUserResponse {
+    int64 Count = 1;
+    repeated GetUser Users = 2;
+}
+
+
+message UserLoginRequest {
+    string user_login = 1;
+    string user_password = 2;
+}
+
+
+message UserLoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}
+
+
+message UserRegisterRequest {
+    string mail = 1;
+}
+
+message UserRegisterConfRequest {
+    string mail = 1;
+    string otp = 2;
+    repeated CreateUser User = 3;
+}
+
+
+message UserChangePassword {
+    string UserLogin = 1;
+    string OldPassword = 2;
+    string NewPassword  = 3;
+}
+
+message UserChangePasswordResp {
+    string comment = 1;
+}
+
+message GetUserByLogin {
+    string user_login = 1;
+    string user_password = 2;
+    string birthday = 3;
+    string gender = 4;
+    string fullname = 5;
+    string email = 6;
+    string phone = 7;
+    string created_at = 8;
+    string updated_at = 9;
+    string id = 10;
+}
+
+message CheckUserResp {
+    bool check = 1;
+}

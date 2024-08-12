@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+option go_package = "genproto/task_service";
+
+package task_service_go;
+import "google/protobuf/empty.proto";
+
+
+service TaskService {
+    rpc Create(CreateTask) returns (GetTask) {}
+    rpc GetByID(TaskPrimaryKey) returns (GetTask) {}
+    rpc GetByExternalId(TaskPrimaryKey) returns (GetTask) {}
+    rpc Update(UpdateTask) returns (GetTask) {}
+    rpc ChangeStatus(TaskChangeStatus) returns (TaskChangeStatusResp) {}
+    rpc Delete(TaskPrimaryKey) returns (google.protobuf.Empty) {}
+    rpc GetList(GetListTaskRequest) returns (GetListTaskResponse) {}
+}
+
+message TaskPrimaryKey {
+    string id = 1;
+}
+
+message CreateTask {
+    string user_id = 1;
+    string title = 2;
+    string task_status = 3;
+    string task_description = 4;
+    string deadline = 5;
+}
+
+message GetTask {
+    string user_id = 1;
+    string external_id = 2;
+    string title = 3;
+    string task_status = 4;
+    string task_description = 5;
+    string deadline = 6;
+    string created_at = 7;
+    string updated_at = 8;
+    string id = 9;
+}
+
+message UpdateTask {
+    string user_id = 1;
+    string title = 2;
+    double task_description = 3;
+    string deadline = 4;
+    string id = 5;
+}
+
+
+message GetListTask {
+    string user_id = 1;
+    string external_id = 2;
+    string title = 3;
+    string task_status = 4;
+    string task_description = 5;
+    string deadline = 6;
+    string created_at = 7;
+    string updated_at = 8;
+    string id = 9;
+}
+
+message GetListTaskRequest {
+    string from_date= 1;
+    string to_date = 2;
+    int64 offset = 3;
+    int64 limit = 4;
+    string search = 5;
+    string owner_id = 6;
+}
+
+message GetListTaskResponse {
+    int64 Count = 1;
+    repeated GetListTask Tasks = 2;
+}
+
+message TaskChangeStatus {
+    string task_id = 1;
+    string new_status = 2;
+}
+
+message TaskChangeStatusResp {
+    string comment = 1;
+}
